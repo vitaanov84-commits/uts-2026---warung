@@ -39,4 +39,25 @@ class ProductController extends Controller
             'data' => $product
         ], 201);
     }
+
+    public function update(Request $request, Product $product)
+    {
+        $validated = $request->validate([
+            'name' => 'sometimes|required|string|max:255',
+            'price' => 'sometimes|required|numeric|min:0',
+            'stock' => 'sometimes|required|integer|min:0',
+        ]);
+
+        $product->update($validated);
+
+        return response()->json(['message' => 'Produk berhasil diubah', 'data' => $product]);
+    }
+
+    public function destroy(Product $product)
+    {
+        $product->orderItems()->update(['product_id' => null]);
+        $product->delete();
+
+        return response()->json(['message' => 'Produk berhasil dihapus']);
+    }
 }
